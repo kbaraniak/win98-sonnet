@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Windows 98 — My Website</title>
+<style>
+/* ═══════════════ RESET ═══════════════ */
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;}
+input,textarea{user-select:text;}
+
+body{
+  background:#008080;
+  font-family:'MS Sans Serif',Arial,sans-serif;
+  font-size:11px;
+  overflow:hidden;
+  height:100vh;width:100vw;
+}
+
+/* ═══════════════ WINDOW ═══════════════ */
+.window{
+  position:fixed;
+  background:#c0c0c0;
+  border-top:2px solid #fff;
+  border-left:2px solid #fff;
+  border-right:2px solid #000;
+  border-bottom:2px solid #000;
+  display:flex;flex-direction:column;
+  min-width:160px;min-height:60px;
+}
+
+/* ── Title bar ── */
+.window-titlebar{
+  background:linear-gradient(to right,#000080,#1084d0);
+  color:#fff;font-weight:bold;font-size:11px;
+  padding:3px 4px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:default;flex-shrink:0;
+}
+.window-titlebar.inactive{background:linear-gradient(to right,#808080,#a0a0a0);}
+.title-left{display:flex;align-items:center;gap:4px;overflow:hidden;white-space:nowrap;}
+
+/* ── Window controls ── */
+.window-controls{display:flex;gap:2px;flex-shrink:0;margin-left:4px;}
+.wctrl{
+  width:16px;height:14px;background:#c0c0c0;
+  border-top:1px solid #fff;border-left:1px solid #fff;
+  border-right:1px solid #000;border-bottom:1px solid #000;
+  font-size:9px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-weight:bold;color:#000;flex-shrink:0;
+}
+.wctrl:active{
+  border-top:1px solid #000;border-left:1px solid #000;
+  border-right:1px solid #fff;border-bottom:1px solid #fff;
+}
+
+/* ── Menu bar ── */
+.window-menu{
+  background:#c0c0c0;border-bottom:1px solid #808080;
+  padding:1px 4px;display:flex;flex-shrink:0;
+}
+.menu-item{padding:3px 7px;cursor:pointer;}
+.menu-item:hover,.menu-item.open{background:#000080;color:#fff;}
+
+/* ── Body ── */
+.window-body{
+  padding:8px;background:#c0c0c0;
+  flex:1;overflow:auto;
+}
+
+/* ═══════════════ BUTTONS ═══════════════ */
+.btn{
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #808080;border-bottom:2px solid #808080;
+  padding:3px 10px;
+  font-family:'MS Sans Serif',Arial,sans-serif;font-size:11px;
+  cursor:pointer;outline:none;min-width:72px;
+}
+.btn:active{
+  border-top:2px solid #808080;border-left:2px solid #808080;
+  border-right:2px solid #fff;border-bottom:2px solid #fff;
+}
+.btn.default-btn{outline:2px solid #000;outline-offset:-4px;}
+
+/* ═══════════════ BOXES ═══════════════ */
+.inset{
+  border-top:2px solid #808080;border-left:2px solid #808080;
+  border-right:2px solid #fff;border-bottom:2px solid #fff;
+  background:#fff;padding:6px;
+}
+.raised{
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #808080;border-bottom:2px solid #808080;
+  background:#c0c0c0;padding:6px;
+}
+.separator{border-top:1px solid #808080;border-bottom:1px solid #fff;margin:5px 0;}
+
+/* ═══════════════ INPUTS ═══════════════ */
+.input98{
+  border-top:2px solid #808080;border-left:2px solid #808080;
+  border-right:2px solid #fff;border-bottom:2px solid #fff;
+  background:#fff;padding:2px 4px;
+  font-family:'MS Sans Serif',Arial,sans-serif;font-size:11px;
+  outline:none;width:100%;
+}
+
+/* ═══════════════ PROGRESS BAR ═══════════════ */
+.progress-bar{
+  border-top:2px solid #808080;border-left:2px solid #808080;
+  border-right:2px solid #fff;border-bottom:2px solid #fff;
+  height:20px;background:#c0c0c0;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:#000080;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:10px;
+}
+
+/* ═══════════════ TABS ═══════════════ */
+.tab-bar{display:flex;gap:2px;padding-left:6px;}
+.tab{
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #808080;border-bottom:none;
+  padding:3px 10px;cursor:pointer;font-size:11px;
+}
+.tab.active{padding-top:5px;z-index:1;border-bottom:2px solid #c0c0c0;}
+
+/* ═══════════════ TABLE ═══════════════ */
+.win-table{width:100%;border-collapse:collapse;font-size:11px;}
+.win-table thead tr{background:#000080;color:#fff;}
+.win-table th,.win-table td{padding:2px 8px;text-align:left;border-right:1px solid #c0c0c0;}
+.win-table tbody tr:hover,.win-table tbody tr.sel{background:#000080;color:#fff;}
+
+/* ═══════════════ ICON GRID ═══════════════ */
+.icon-grid{display:flex;flex-wrap:wrap;gap:12px;padding:8px;}
+.icon-item{
+  display:flex;flex-direction:column;align-items:center;
+  gap:3px;cursor:pointer;width:62px;text-align:center;
+}
+.icon-item .icon-label{font-size:11px;color:#000;padding:1px 3px;}
+.icon-item:hover .icon-label,.icon-item.sel .icon-label{
+  background:#000080;color:#fff;outline:1px dotted #fff;
+}
+
+/* ═══════════════ MARQUEE ═══════════════ */
+.marquee-box{
+  background:#000;color:#0f0;
+  font-family:'Courier New',monospace;font-size:11px;
+  padding:3px 6px;overflow:hidden;white-space:nowrap;
+  position:relative;height:21px;
+}
+.marquee-inner{position:absolute;white-space:nowrap;}
+
+/* ═══════════════ DESKTOP ICONS ═══════════════ */
+#desktopIcons{
+  position:fixed;top:10px;left:10px;
+  z-index:1;display:flex;flex-direction:column;gap:18px;
+}
+.di{
+  display:flex;flex-direction:column;align-items:center;
+  gap:3px;cursor:pointer;width:64px;text-align:center;
+}
+.di .di-lbl{
+  color:#fff;text-shadow:1px 1px #000;font-size:11px;
+  padding:1px 2px;word-break:break-word;
+}
+.di:hover .di-lbl,.di.sel .di-lbl{
+  background:#000080;outline:1px dotted #fff;
+}
+
+/* ═══════════════ TASKBAR ═══════════════ */
+#taskbar{
+  position:fixed;bottom:0;left:0;right:0;height:36px;
+  background:#c0c0c0;border-top:2px solid #fff;
+  display:flex;align-items:center;gap:2px;padding:2px 4px;
+  z-index:9000;
+}
+#start-btn{
+  display:flex;align-items:center;gap:4px;
+  padding:3px 8px;font-weight:bold;font-size:12px;flex-shrink:0;
+}
+.taskbar-sep{
+  width:2px;height:28px;
+  border-left:1px solid #808080;border-right:1px solid #fff;
+  margin:0 2px;flex-shrink:0;
+}
+#tbButtons{display:flex;gap:2px;flex:1;overflow:hidden;}
+.tb-btn{
+  min-width:100px;max-width:150px;height:26px;
+  display:flex;align-items:center;gap:4px;
+  padding:2px 6px;font-size:11px;cursor:pointer;
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #808080;border-bottom:2px solid #808080;
+  font-family:'MS Sans Serif',Arial,sans-serif;
+  flex-shrink:0;
+}
+.tb-btn.pressed{
+  border-top:2px solid #808080;border-left:2px solid #808080;
+  border-right:2px solid #fff;border-bottom:2px solid #fff;
+  background:#b0b0b0;
+}
+.sys-tray{
+  margin-left:auto;flex-shrink:0;
+  border-top:1px solid #808080;border-left:1px solid #808080;
+  border-right:1px solid #fff;border-bottom:1px solid #fff;
+  padding:2px 8px;font-size:11px;white-space:nowrap;
+}
+
+/* ═══════════════ START MENU ═══════════════ */
+#startMenu{
+  display:none;position:fixed;bottom:38px;left:0;
+  z-index:20000;width:220px;
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #000;border-bottom:2px solid #000;
+  box-shadow:2px 2px 0 #808080;
+}
+.sm-sidebar{
+  width:24px;background:linear-gradient(to top,#000080,#1084d0);
+  display:flex;align-items:flex-end;padding:4px 2px;
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  color:#fff;font-size:12px;font-weight:bold;letter-spacing:2px;
+}
+.sm-item{
+  padding:5px 10px 5px 8px;cursor:pointer;
+  font-size:11px;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+}
+.sm-item:hover{background:#000080;color:#fff;}
+.sm-arrow{margin-left:auto;font-size:9px;}
+
+/* ── Submenus ── */
+.sm-sub{
+  display:none;position:fixed;
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #000;border-bottom:2px solid #000;
+  box-shadow:2px 2px 0 #808080;
+  z-index:21000;min-width:170px;
+}
+.sm-sub .sm-item:hover{background:#000080;color:#fff;}
+
+/* ═══════════════ CONTEXT MENU ═══════════════ */
+#ctxMenu{
+  display:none;position:fixed;z-index:30000;
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #000;border-bottom:2px solid #000;
+  box-shadow:2px 2px 0 #808080;min-width:160px;
+}
+.ctx-item{
+  padding:4px 20px 4px 24px;cursor:pointer;
+  font-size:11px;white-space:nowrap;
+}
+.ctx-item:hover{background:#000080;color:#fff;}
+.ctx-item.disabled{color:#808080;cursor:default;}
+.ctx-item.disabled:hover{background:transparent;color:#808080;}
+.ctx-sep{border-top:1px solid #808080;border-bottom:1px solid #fff;margin:2px 0;}
+
+/* ═══════════════ MENU DROPDOWN (menubar) ═══════════════ */
+.menu-popup{
+  display:none;position:fixed;
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #000;border-bottom:2px solid #000;
+  box-shadow:2px 2px 0 #808080;min-width:150px;z-index:25000;
+}
+.menu-popup .ctx-item:hover{background:#000080;color:#fff;}
+
+/* ═══════════════ DIALOGS ═══════════════ */
+.dlg-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.35);z-index:40000;
+  align-items:center;justify-content:center;
+}
+.dlg-overlay.open{display:flex;}
+.dlg{min-width:280px;}
+
+/* ═══════════════ MINESWEEPER ═══════════════ */
+.mine-cell{
+  width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:bold;cursor:pointer;
+  background:#c0c0c0;
+  border-top:2px solid #fff;border-left:2px solid #fff;
+  border-right:2px solid #808080;border-bottom:2px solid #808080;
+}
+.mine-cell.revealed{
+  border:1px solid #808080;cursor:default;
+  background:#c0c0c0;
+}
+.mine-cell.boom{background:#f00;}
+
+/* ═══════════════ RESIZE HANDLE ═══════════════ */
+.resize-handle{
+  position:absolute;right:0;bottom:0;
+  width:14px;height:14px;cursor:se-resize;
+  background:linear-gradient(135deg,transparent 50%,#808080 50%,#808080 60%,transparent 60%,
+    transparent 70%,#808080 70%,#808080 80%,transparent 80%);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ DESKTOP ICONS ═══ -->
+<div id="desktopIcons">
+  <div class="di" data-di="myComputerWin" ondblclick="openWin('myComputerWin')" oncontextmenu="showCtx(event,'di',{id:'myComputerWin',label:'My Computer'})">
+    <span style="font-size:32px">🖥️</span><span class="di-lbl">My Computer</span>
+  </div>
+  <div class="di" data-di="guestbookWin" ondblclick="openWin('guestbookWin')" oncontextmenu="showCtx(event,'di',{id:'guestbookWin',label:'Guestbook'})">
+    <span style="font-size:32px">📬</span><span class="di-lbl">Guestbook</span>
+  </div>
+  <div class="di" data-di="aboutWin" ondblclick="openWin('aboutWin')" oncontextmenu="showCtx(event,'di',{id:'aboutWin',label:'Notepad'})">
+    <span style="font-size:32px">📝</span><span class="di-lbl">Notepad</span>
+  </div>
+  <div class="di" data-di="recycleWin" ondblclick="openWin('recycleWin')" oncontextmenu="showCtx(event,'di',{id:'recycleWin',label:'Recycle Bin'})">
+    <span style="font-size:32px">🗑️</span><span class="di-lbl">Recycle Bin</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════ WINDOWS ═══════════════════════ -->
+
+<!-- Welcome -->
+<div class="window" id="welcomeWin">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'welcomeWin'})">
+    <div class="title-left">🖥️ Welcome to My Website!</div>
+    <div class="window-controls">
+      <div class="wctrl" title="Minimize" onclick="minWin('welcomeWin')">_</div>
+      <div class="wctrl" title="Maximize" onclick="maxWin('welcomeWin')">□</div>
+      <div class="wctrl" title="Close"    onclick="closeWin('welcomeWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-menu">
+    <span class="menu-item" onclick="toggleMenuBar(this,'fileMenuWelcome')"><u>F</u>ile</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'editMenuGeneric')"><u>E</u>dit</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'viewMenuGeneric')"><u>V</u>iew</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'helpMenuGeneric')"><u>H</u>elp</span>
+  </div>
+  <div class="window-body">
+    <div style="display:flex;gap:12px;align-items:flex-start;">
+      <div style="font-size:48px;line-height:1;flex-shrink:0">🖥️</div>
+      <div style="flex:1;min-width:0">
+        <p style="font-size:14px;font-weight:bold;margin-bottom:6px;">Welcome to <span style="color:#000080">My Website</span>!</p>
+        <p style="margin-bottom:4px;">Designed in classic <b>Windows 98</b> style.</p>
+        <p style="margin-bottom:6px;">Try <b>right-clicking</b> anywhere, drag the windows, Start menu has submenus!</p>
+        <div class="marquee-box">
+          <span class="marquee-inner" id="mqText">★ Best viewed in Internet Explorer 4.0 at 800×600 ★ Under Construction 🚧 ★ Visitor #001337 ★ &nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+      </div>
+    </div>
+    <div class="separator"></div>
+    <div style="display:flex;gap:6px;">
+      <button class="btn default-btn" onclick="openDlg('dlgWelcome')">OK</button>
+      <button class="btn" onclick="closeWin('welcomeWin')">Cancel</button>
+      <button class="btn" onclick="alert('Help is not available.\n\nPlease consult your manual.')">Help</button>
+    </div>
+  </div>
+  <div class="resize-handle" data-win="welcomeWin"></div>
+</div>
+
+<!-- File menu popup for welcome -->
+<div class="menu-popup" id="fileMenuWelcome">
+  <div class="ctx-item" onclick="hideMenuBar();alert('New file created.')">New</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Open dialog...')">Open...</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Saved! (not really)')">Save</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('No printer found!')">Print...</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();closeWin('welcomeWin')">Exit</div>
+</div>
+
+<!-- My Computer -->
+<div class="window" id="myComputerWin">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'myComputerWin'})">
+    <div class="title-left">📁 My Computer</div>
+    <div class="window-controls">
+      <div class="wctrl" onclick="minWin('myComputerWin')">_</div>
+      <div class="wctrl" onclick="maxWin('myComputerWin')">□</div>
+      <div class="wctrl" onclick="closeWin('myComputerWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-menu">
+    <span class="menu-item" onclick="toggleMenuBar(this,'fileMenuMyComp')"><u>F</u>ile</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'editMenuExplorer')"><u>E</u>dit</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'viewMenuExplorer')"><u>V</u>iew</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'favMenuExplorer')">F<u>a</u>vorites</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'helpMenuGeneric')"><u>H</u>elp</span>
+  </div>
+  <div class="window-body">
+    <div class="icon-grid">
+      <div class="icon-item" ondblclick="alert('3½ Floppy (A:)\n\nNot ready.\nPlease insert a disk.')" oncontextmenu="showCtx(event,'drive',{name:'3½ Floppy (A:)'})">
+        <span style="font-size:32px">💾</span><span class="icon-label">3½ Floppy (A:)</span>
+      </div>
+      <div class="icon-item" ondblclick="openWin('tableWin')" oncontextmenu="showCtx(event,'drive',{name:'Local Disk (C:)'})">
+        <span style="font-size:32px">🖴</span><span class="icon-label">Local Disk (C:)</span>
+      </div>
+      <div class="icon-item" ondblclick="alert('(D:)\n\nPlease insert a disc.')" oncontextmenu="showCtx(event,'drive',{name:'CD-ROM (D:)'})">
+        <span style="font-size:32px">💿</span><span class="icon-label">CD-ROM (D:)</span>
+      </div>
+      <div class="icon-item" ondblclick="alert('No printers installed.\n\nAdd Printer Wizard?')" oncontextmenu="showCtx(event,'drive',{name:'Printers'})">
+        <span style="font-size:32px">🖨️</span><span class="icon-label">Printers</span>
+      </div>
+      <div class="icon-item" ondblclick="openWin('sysWin')" oncontextmenu="showCtx(event,'drive',{name:'Control Panel'})">
+        <span style="font-size:32px">⚙️</span><span class="icon-label">Control Panel</span>
+      </div>
+      <div class="icon-item" ondblclick="alert('Connecting...\n\nSCREEEEEE-KA-CHING-CHING-bzzz!\n\nConnected at 56k bps!')" oncontextmenu="showCtx(event,'drive',{name:'Dial-Up Networking'})">
+        <span style="font-size:32px">📞</span><span class="icon-label">Dial-Up Networking</span>
+      </div>
+    </div>
+    <div class="separator"></div>
+    <div style="color:#000080;font-size:10px;">6 object(s) &nbsp;|&nbsp; Free Space: 1.21 GB</div>
+  </div>
+  <div class="resize-handle" data-win="myComputerWin"></div>
+</div>
+
+<!-- Notepad -->
+<div class="window" id="aboutWin">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'aboutWin'})">
+    <div class="title-left">📝 about_me.txt - Notepad</div>
+    <div class="window-controls">
+      <div class="wctrl" onclick="minWin('aboutWin')">_</div>
+      <div class="wctrl" onclick="maxWin('aboutWin')">□</div>
+      <div class="wctrl" onclick="closeWin('aboutWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-menu">
+    <span class="menu-item" onclick="toggleMenuBar(this,'fileMenuNotepad')"><u>F</u>ile</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'editMenuNotepad')"><u>E</u>dit</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'viewMenuNotepad')"><u>V</u>iew</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'helpMenuGeneric')"><u>H</u>elp</span>
+  </div>
+  <div class="window-body" style="padding:0;display:flex;flex-direction:column;">
+    <textarea id="notepadText" style="
+      flex:1;border:none;border-top:2px solid #808080;resize:none;
+      font-family:'Courier New',monospace;font-size:12px;padding:4px;
+      outline:none;background:#fff;min-height:150px;
+    " spellcheck="false">Hi there! My name is Webmaster99.
+
+I love:
+  - Surfing the World Wide Web
+  - Playing Minesweeper
+  - Listening to MIDI music
+  - Downloading cool screensavers
+  - Chat rooms on AOL
+
+My favourite website: www.geocities.com
+
+Under Construction!! 🚧
+
+Last updated: November 1998
+</textarea>
+  </div>
+  <div class="resize-handle" data-win="aboutWin"></div>
+</div>
+
+<div class="menu-popup" id="fileMenuNotepad">
+  <div class="ctx-item" onclick="hideMenuBar();document.getElementById('notepadText').value=''">New</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Open dialog...')">Open...</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Saved to: C:\\My Documents\\about_me.txt')">Save</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Save As...')">Save As...</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();window.print()">Print...</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();closeWin('aboutWin')">Exit</div>
+</div>
+
+<!-- Guestbook -->
+<div class="window" id="guestbookWin">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'guestbookWin'})">
+    <div class="title-left">📬 Sign My Guestbook!</div>
+    <div class="window-controls">
+      <div class="wctrl" onclick="minWin('guestbookWin')">_</div>
+      <div class="wctrl" onclick="maxWin('guestbookWin')">□</div>
+      <div class="wctrl" onclick="closeWin('guestbookWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-body">
+    <div style="margin-bottom:6px;">
+      <label style="display:block;margin-bottom:2px;">Your Name:</label>
+      <input type="text" class="input98" id="gbName" placeholder="Enter your name…"/>
+    </div>
+    <div style="margin-bottom:6px;">
+      <label style="display:block;margin-bottom:2px;">Email:</label>
+      <input type="email" class="input98" id="gbEmail" placeholder="user@aol.com"/>
+    </div>
+    <div style="margin-bottom:6px;">
+      <label style="display:block;margin-bottom:2px;">Message:</label>
+      <textarea class="input98" id="gbMsg" rows="4" placeholder="Write your message here…"></textarea>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <button class="btn default-btn" onclick="signGuestbook()">Submit</button>
+      <button class="btn" onclick="document.getElementById('gbName').value='';document.getElementById('gbEmail').value='';document.getElementById('gbMsg').value=''">Clear</button>
+    </div>
+  </div>
+  <div class="resize-handle" data-win="guestbookWin"></div>
+</div>
+
+<!-- System Properties -->
+<div class="window" id="sysWin" style="display:none;">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'sysWin'})">
+    <div class="title-left">⚙️ System Properties</div>
+    <div class="window-controls">
+      <div class="wctrl" onclick="minWin('sysWin')">_</div>
+      <div class="wctrl" onclick="maxWin('sysWin')">□</div>
+      <div class="wctrl" onclick="closeWin('sysWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-body">
+    <div class="tab-bar">
+      <div class="tab active" id="tabG" onclick="switchTab('G')">General</div>
+      <div class="tab" id="tabD" onclick="switchTab('D')">Device Manager</div>
+      <div class="tab" id="tabP" onclick="switchTab('P')">Performance</div>
+    </div>
+    <div class="raised" id="tcG">
+      <div style="display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;margin-bottom:8px;">
+        <div>
+          <div style="font-weight:bold;color:#000080;margin-bottom:2px;">System:</div>
+          <div>Microsoft Windows 98</div><div>Second Edition</div>
+          <div style="margin-top:4px;font-weight:bold;color:#000080;">Computer:</div>
+          <div>Intel Pentium II</div><div>266 MHz</div>
+        </div>
+        <div>
+          <div style="font-weight:bold;color:#000080;margin-bottom:2px;">Memory:</div>
+          <div>64 MB RAM</div>
+          <div style="margin-top:4px;font-weight:bold;color:#000080;">Storage:</div>
+          <div>2 GB HDD</div><div>52× CD-ROM</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:36px;">💻</div>
+          <div style="font-size:9px;color:#808080;">Registered to:<br/><b>Webmaster99</b></div>
+        </div>
+      </div>
+      <div style="margin-bottom:3px;font-weight:bold;">Loading Windows…</div>
+      <div class="progress-bar" style="margin-bottom:6px;">
+        <div class="progress-fill" id="progressBar" style="width:72%;">72%</div>
+      </div>
+      <div style="margin-bottom:3px;font-weight:bold;">Memory Usage:</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:45%;background:#800000;">45%</div>
+      </div>
+    </div>
+    <div class="raised" id="tcD" style="display:none;">
+      <div style="margin-bottom:4px;font-weight:bold;">💻 Computer</div>
+      <div style="padding-left:14px;margin-bottom:3px;">✅ BIOS date: 09/09/1998</div>
+      <div style="font-weight:bold;margin-bottom:3px;">📺 Display Adapters</div>
+      <div style="padding-left:14px;margin-bottom:3px;">✅ S3 Trio64V+ PCI</div>
+      <div style="font-weight:bold;margin-bottom:3px;">🖨️ Ports (COM &amp; LPT)</div>
+      <div style="padding-left:14px;margin-bottom:3px;">✅ Communications Port (COM1)</div>
+      <div style="padding-left:14px;margin-bottom:3px;">⚠️ Unknown Device</div>
+    </div>
+    <div class="raised" id="tcP" style="display:none;">
+      <div style="margin-bottom:6px;font-weight:bold;">Performance Status:</div>
+      <div style="margin-bottom:4px;">Memory: <b>64.0 MB RAM</b></div>
+      <div style="margin-bottom:4px;">System Resources: <b>72% free</b></div>
+      <div style="margin-bottom:4px;">File System: <b>32-bit</b></div>
+      <div style="margin-bottom:4px;">Virtual Memory: <b>32-bit</b></div>
+      <div style="margin-bottom:4px;">Disk Compression: <b>Not installed</b></div>
+      <div class="separator"></div>
+      <div style="color:#000080;">Your system is configured for optimal performance.</div>
+    </div>
+  </div>
+  <div class="resize-handle" data-win="sysWin"></div>
+</div>
+
+<!-- File Explorer -->
+<div class="window" id="tableWin" style="display:none;">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'tableWin'})">
+    <div class="title-left">📂 C:\My Documents\Cool Stuff</div>
+    <div class="window-controls">
+      <div class="wctrl" onclick="minWin('tableWin')">_</div>
+      <div class="wctrl" onclick="maxWin('tableWin')">□</div>
+      <div class="wctrl" onclick="closeWin('tableWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-menu">
+    <span class="menu-item" onclick="toggleMenuBar(this,'fileMenuExplorer')"><u>F</u>ile</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'editMenuExplorer')"><u>E</u>dit</span>
+    <span class="menu-item" onclick="toggleMenuBar(this,'viewMenuExplorer')"><u>V</u>iew</span>
+  </div>
+  <div class="window-body" style="padding:4px;">
+    <div class="inset">
+      <table class="win-table">
+        <thead><tr><th>Name</th><th>Size</th><th>Type</th><th>Modified</th></tr></thead>
+        <tbody>
+          <tr ondblclick="fileOpen('cool_screensaver.scr')" oncontextmenu="showCtx(event,'file',{name:'cool_screensaver.scr'})">
+            <td>🖼️ cool_screensaver.scr</td><td>1.2 MB</td><td>Screen Saver</td><td>10/31/1998</td></tr>
+          <tr ondblclick="fileOpen('homepage.htm')" oncontextmenu="showCtx(event,'file',{name:'homepage.htm'})">
+            <td>🌐 homepage.htm</td><td>42 KB</td><td>HTML Document</td><td>11/02/1998</td></tr>
+          <tr ondblclick="fileOpen('midi_music.mid')" oncontextmenu="showCtx(event,'file',{name:'midi_music.mid'})">
+            <td>🎵 midi_music.mid</td><td>18 KB</td><td>MIDI Sequence</td><td>09/15/1998</td></tr>
+          <tr ondblclick="fileOpen('AOL_installer.exe')" oncontextmenu="showCtx(event,'file',{name:'AOL_installer.exe'})">
+            <td>💿 AOL_installer.exe</td><td>3.4 MB</td><td>Application</td><td>08/20/1998</td></tr>
+          <tr ondblclick="fileOpen('dank_meme.bmp')" oncontextmenu="showCtx(event,'file',{name:'dank_meme.bmp'})">
+            <td>🖼️ dank_meme.bmp</td><td>512 KB</td><td>Bitmap Image</td><td>11/01/1998</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:3px 4px;font-size:10px;color:#808080;">5 object(s) &nbsp;|&nbsp; 5.16 MB</div>
+  </div>
+  <div class="resize-handle" data-win="tableWin"></div>
+</div>
+
+<!-- Minesweeper -->
+<div class="window" id="mineWin" style="display:none;">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'mineWin'})">
+    <div class="title-left">💣 Minesweeper</div>
+    <div class="window-controls">
+      <div class="wctrl" onclick="minWin('mineWin')">_</div>
+      <div class="wctrl" onclick="maxWin('mineWin')">□</div>
+      <div class="wctrl" onclick="closeWin('mineWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-menu">
+    <span class="menu-item" onclick="initMine()"><u>G</u>ame (New)</span>
+    <span class="menu-item" onclick="alert('Minesweeper Help\n\nLeft-click to reveal.\nRight-click to flag a mine.')"><u>H</u>elp</span>
+  </div>
+  <div class="window-body" style="padding:6px;display:inline-block;">
+    <div class="raised" style="padding:4px;display:inline-block;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;">
+        <div class="inset" style="padding:2px 6px;min-width:38px;text-align:center;color:#f00;font-family:'Courier New',monospace;font-weight:bold;font-size:16px;" id="mineCount">010</div>
+        <button class="btn" style="font-size:16px;padding:1px 6px;min-width:28px;" onclick="initMine()" id="mineSmile">🙂</button>
+        <div class="inset" style="padding:2px 6px;min-width:38px;text-align:center;color:#f00;font-family:'Courier New',monospace;font-weight:bold;font-size:16px;" id="mineTimer">000</div>
+      </div>
+      <div id="mineGrid" style="display:inline-grid;grid-template-columns:repeat(9,20px);line-height:0;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Recycle Bin -->
+<div class="window" id="recycleWin" style="display:none;">
+  <div class="window-titlebar" oncontextmenu="showCtx(event,'tb',{id:'recycleWin'})">
+    <div class="title-left">🗑️ Recycle Bin</div>
+    <div class="window-controls">
+      <div class="wctrl" onclick="minWin('recycleWin')">_</div>
+      <div class="wctrl" onclick="maxWin('recycleWin')">□</div>
+      <div class="wctrl" onclick="closeWin('recycleWin')">✕</div>
+    </div>
+  </div>
+  <div class="window-body" style="text-align:center;padding:24px;">
+    <div style="font-size:48px;margin-bottom:8px;">🗑️</div>
+    <div style="color:#808080;">Recycle Bin is empty.</div>
+    <div style="margin-top:10px;"><button class="btn" onclick="alert('Empty Recycle Bin\n\nAre you sure?\n(Nothing to delete anyway!)')">Empty Recycle Bin</button></div>
+  </div>
+</div>
+
+<!-- ═══ TASKBAR ═══ -->
+<div id="taskbar">
+  <button class="btn" id="start-btn" onclick="toggleStart()">
+    <span style="font-size:14px;">🪟</span> <b>Start</b>
+  </button>
+  <div class="taskbar-sep"></div>
+  <div id="tbButtons"></div>
+  <div class="sys-tray">🔊 &nbsp;🌐 &nbsp;<span id="clock">00:00</span></div>
+</div>
+
+<!-- ═══ START MENU ═══ -->
+<div id="startMenu">
+  <div style="display:flex;">
+    <div class="sm-sidebar">Windows 98</div>
+    <div style="flex:1;">
+      <div class="sm-item" onclick="ieAlert();closeStart()">🌐 Internet Explorer</div>
+      <div class="sm-item" onclick="openWin('guestbookWin');closeStart()">📧 Outlook Express</div>
+      <div class="separator" style="margin:2px 4px;"></div>
+      <div class="sm-item" id="smP" onmouseenter="showSub('smP','subPrograms')">📁 Programs<span class="sm-arrow">▶</span></div>
+      <div class="sm-item" id="smD" onmouseenter="showSub('smD','subDocuments')">📄 Documents<span class="sm-arrow">▶</span></div>
+      <div class="sm-item" id="smS" onmouseenter="showSub('smS','subSettings')">⚙️ Settings<span class="sm-arrow">▶</span></div>
+      <div class="sm-item" onmouseenter="hideSubs()" onclick="showFind();closeStart()">🔍 Find...</div>
+      <div class="sm-item" onmouseenter="hideSubs()" onclick="alert('Windows 98 Help\n\n\"Have you tried turning it off and on again?\"');closeStart()">❓ Help</div>
+      <div class="sm-item" onmouseenter="hideSubs()" onclick="openDlg('dlgRun');closeStart()">🏃 Run...</div>
+      <div class="separator" style="margin:2px 4px;"></div>
+      <div class="sm-item" onmouseenter="hideSubs()" onclick="openDlg('dlgShutdown');closeStart()">🔴 Shut Down...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Submenus -->
+<div class="sm-sub" id="subPrograms">
+  <div class="sm-item" onclick="openWin('aboutWin');closeStart()">📝 Notepad</div>
+  <div class="sm-item" onclick="openMine();closeStart()">💣 Minesweeper</div>
+  <div class="sm-item" onclick="openWin('tableWin');closeStart()">📂 Windows Explorer</div>
+  <div class="sm-item" onclick="ieAlert();closeStart()">🌐 Internet Explorer</div>
+  <div class="sm-item" onclick="alert('MS-DOS Prompt\n\nC:\\>_');closeStart()">🖥️ MS-DOS Prompt</div>
+</div>
+
+<div class="sm-sub" id="subDocuments">
+  <div class="sm-item" onclick="openWin('aboutWin');closeStart()">📝 about_me.txt</div>
+  <div class="sm-item" onclick="openWin('tableWin');closeStart()">📂 Cool Stuff</div>
+  <div class="sm-item" onclick="alert('No other recent documents.');closeStart()">📄 (more…)</div>
+</div>
+
+<div class="sm-sub" id="subSettings">
+  <div class="sm-item" onclick="openWin('sysWin');closeStart()">⚙️ Control Panel</div>
+  <div class="sm-item" onclick="alert('Printers\n\nNo printers installed.');closeStart()">🖨️ Printers</div>
+  <div class="sm-item" onclick="alert('Taskbar Settings:\n• Always on top: ✅\n• Auto-hide: ❌\n• Show clock: ✅');closeStart()">🗂️ Taskbar &amp; Start Menu</div>
+</div>
+
+<!-- ═══ CONTEXT MENU ═══ -->
+<div id="ctxMenu"></div>
+
+<!-- ═══════════════════════ DIALOGS ═══════════════════════ -->
+
+<!-- Welcome -->
+<div class="dlg-overlay" id="dlgWelcome">
+  <div class="window dlg" style="width:300px;">
+    <div class="window-titlebar"><div class="title-left">⚠️ Windows</div>
+      <div class="window-controls"><div class="wctrl" onclick="closeDlg('dlgWelcome')">✕</div></div>
+    </div>
+    <div class="window-body" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">⚠️</div>
+      <p style="margin-bottom:4px;">Welcome to my website!</p>
+      <p style="color:#808080;font-size:10px;margin-bottom:12px;">Click OK to continue browsing.</p>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="btn default-btn" onclick="closeDlg('dlgWelcome')">OK</button>
+        <button class="btn" onclick="closeDlg('dlgWelcome')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Run -->
+<div class="dlg-overlay" id="dlgRun">
+  <div class="window dlg" style="width:360px;">
+    <div class="window-titlebar"><div class="title-left">🏃 Run</div>
+      <div class="window-controls"><div class="wctrl" onclick="closeDlg('dlgRun')">✕</div></div>
+    </div>
+    <div class="window-body">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;">
+        <span style="font-size:32px;flex-shrink:0;">🏃</span>
+        <div style="flex:1;">
+          <p style="margin-bottom:6px;">Type the name of a program, folder, or document, and Windows will open it.</p>
+          <label style="display:block;margin-bottom:2px;">Open:</label>
+          <input type="text" class="input98" id="runInput" placeholder="e.g. notepad, minesweeper, explorer…"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;">
+        <button class="btn default-btn" onclick="runCmd()">OK</button>
+        <button class="btn" onclick="closeDlg('dlgRun')">Cancel</button>
+        <button class="btn" onclick="alert('Browse…\n\nFeature not implemented.')">Browse…</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Shutdown -->
+<div class="dlg-overlay" id="dlgShutdown">
+  <div class="window dlg" style="width:380px;">
+    <div class="window-titlebar"><div class="title-left">🔴 Shut Down Windows</div>
+      <div class="window-controls"><div class="wctrl" onclick="closeDlg('dlgShutdown')">✕</div></div>
+    </div>
+    <div class="window-body">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+        <span style="font-size:40px;flex-shrink:0;">🖥️</span>
+        <p style="font-weight:bold;">What do you want the computer to do?</p>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;margin-bottom:5px;cursor:pointer;"><input type="radio" name="sd" value="shutdown" checked/> Shut down</label>
+        <label style="display:flex;align-items:center;gap:6px;margin-bottom:5px;cursor:pointer;"><input type="radio" name="sd" value="restart"/> Restart</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="radio" name="sd" value="sleep"/> Stand by</label>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;">
+        <button class="btn default-btn" onclick="doShutdown()">OK</button>
+        <button class="btn" onclick="closeDlg('dlgShutdown')">Cancel</button>
+        <button class="btn" onclick="alert('Help not available.')">Help</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Find Files -->
+<div class="dlg-overlay" id="dlgFind">
+  <div class="window dlg" style="width:380px;">
+    <div class="window-titlebar"><div class="title-left">🔍 Find: All Files</div>
+      <div class="window-controls"><div class="wctrl" onclick="closeDlg('dlgFind')">✕</div></div>
+    </div>
+    <div class="window-menu">
+      <span class="menu-item"><u>F</u>ile</span>
+      <span class="menu-item"><u>E</u>dit</span>
+      <span class="menu-item"><u>V</u>iew</span>
+      <span class="menu-item"><u>O</u>ptions</span>
+    </div>
+    <div class="window-body">
+      <div class="tab-bar" style="margin-bottom:0;">
+        <div class="tab active">Name &amp; Location</div>
+        <div class="tab" onclick="alert('Date Modified tab')">Date Modified</div>
+        <div class="tab" onclick="alert('Advanced tab')">Advanced</div>
+      </div>
+      <div class="raised" style="margin-bottom:8px;">
+        <div style="margin-bottom:6px;">
+          <label style="display:block;margin-bottom:2px;">Named:</label>
+          <input type="text" class="input98" id="findName" placeholder="e.g. *.txt"/>
+        </div>
+        <div style="margin-bottom:6px;">
+          <label style="display:block;margin-bottom:2px;">Look in:</label>
+          <input type="text" class="input98" value="C:\"/>
+        </div>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="checkbox" checked/> Include subfolders
+        </label>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;">
+        <button class="btn default-btn" onclick="doFind()">Find Now</button>
+        <button class="btn" onclick="closeDlg('dlgFind')">Cancel</button>
+        <button class="btn" onclick="alert('New Search')">New Search</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Properties -->
+<div class="dlg-overlay" id="dlgProps">
+  <div class="window dlg" style="width:320px;">
+    <div class="window-titlebar"><div class="title-left" id="propsTitle">ℹ️ Properties</div>
+      <div class="window-controls"><div class="wctrl" onclick="closeDlg('dlgProps')">✕</div></div>
+    </div>
+    <div class="window-body">
+      <div class="tab-bar"><div class="tab active">General</div></div>
+      <div class="raised" id="propsBody"></div>
+      <div style="margin-top:10px;display:flex;gap:6px;justify-content:flex-end;">
+        <button class="btn default-btn" onclick="closeDlg('dlgProps')">OK</button>
+        <button class="btn" onclick="closeDlg('dlgProps')">Cancel</button>
+        <button class="btn" onclick="closeDlg('dlgProps')">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║               WINDOW MANAGER                        ║
+// ╚══════════════════════════════════════════════════════╝
+const WIN = {};   // id → state
+let topZ = 100, activeId = null;
+
+function reg(id, left, top, width) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const hidden = el.style.display === 'none';
+  el.style.left = left + 'px';
+  el.style.top  = top  + 'px';
+  el.style.width = width + 'px';
+  el.style.zIndex = topZ++;
+  WIN[id] = { left, top, width, closed: hidden, minimized: false, maximized: false, prev: null };
+  drag(id);
+  resize(id);
+  if (!hidden) addTbBtn(id);
+}
+
+// ── Drag ──
+function drag(id) {
+  const el = document.getElementById(id);
+  const tb = el.querySelector('.window-titlebar');
+  let ox = 0, oy = 0, dragging = false;
+  tb.addEventListener('mousedown', e => {
+    if (e.target.closest('.window-controls') || e.button !== 0) return;
+    if (WIN[id].maximized) return;
+    dragging = true;
+    ox = e.clientX - el.offsetLeft;
+    oy = e.clientY - el.offsetTop;
+    focus(id);
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const nx = e.clientX - ox;
+    const ny = Math.max(-2, e.clientY - oy);
+    el.style.left = nx + 'px'; WIN[id].left = nx;
+    el.style.top  = ny + 'px'; WIN[id].top  = ny;
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+  el.addEventListener('mousedown', () => focus(id));
+}
+
+// ── Resize from corner ──
+function resize(id) {
+  const el = document.getElementById(id);
+  const handle = el.querySelector('.resize-handle');
+  if (!handle) return;
+  let startX, startY, startW, startH, resizing = false;
+  handle.addEventListener('mousedown', e => {
+    if (WIN[id].maximized) return;
+    resizing = true;
+    startX = e.clientX; startY = e.clientY;
+    startW = el.offsetWidth; startH = el.offsetHeight;
+    e.preventDefault(); e.stopPropagation();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!resizing) return;
+    const nw = Math.max(180, startW + e.clientX - startX);
+    const nh = Math.max(80,  startH + e.clientY - startY);
+    el.style.width  = nw + 'px';
+    el.style.height = nh + 'px';
+  });
+  document.addEventListener('mouseup', () => { resizing = false; });
+}
+
+// ── Focus / z-order ──
+function focus(id) {
+  if (activeId === id) return;
+  activeId = id;
+  document.getElementById(id).style.zIndex = ++topZ;
+  document.querySelectorAll('.window').forEach(w => {
+    const tb = w.querySelector('.window-titlebar');
+    if (tb) tb.classList.toggle('inactive', w.id !== id);
+  });
+  document.querySelectorAll('.tb-btn').forEach(b =>
+    b.classList.toggle('pressed', b.dataset.id === id)
+  );
+}
+
+// ── Open (from icon / Start menu) ──
+function openWin(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const s = WIN[id];
+  if (!s) { el.style.display = ''; return; }
+  if (s.closed) {
+    el.style.display = '';
+    s.closed = false; s.minimized = false;
+    showBody(id);
+    addTbBtn(id);
+  } else if (s.minimized) {
+    restoreWin(id);
+    return;
+  }
+  focus(id);
+  closeStart();
+}
+
+// ── Close ──
+function closeWin(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'none';
+  WIN[id].closed = true; WIN[id].minimized = false; WIN[id].maximized = false;
+  el.style.width  = WIN[id].width + 'px';
+  el.style.height = '';
+  removeTbBtn(id);
+  if (activeId === id) activeId = null;
+}
+
+// ── Minimize ──
+function minWin(id) {
+  const el = document.getElementById(id);
+  WIN[id].minimized = true;
+  hideBody(id);
+  el.style.left = '-9999px'; el.style.top = '-9999px';
+  const btn = document.getElementById('tb_' + id);
+  if (btn) btn.classList.remove('pressed');
+  if (activeId === id) activeId = null;
+}
+
+// ── Maximize / restore ──
+function maxWin(id) {
+  const el = document.getElementById(id);
+  const s = WIN[id];
+  if (s.maximized) {
+    const p = s.prev;
+    el.style.left   = p.left   + 'px';
+    el.style.top    = p.top    + 'px';
+    el.style.width  = p.width  + 'px';
+    el.style.height = p.height ? p.height + 'px' : '';
+    s.maximized = false;
+  } else {
+    s.prev = { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight || null };
+    el.style.left   = '0';
+    el.style.top    = '0';
+    el.style.width  = '100vw';
+    el.style.height = 'calc(100vh - 38px)';
+    s.maximized = true;
+    focus(id);
+  }
+}
+
+// ── Restore from minimize ──
+function restoreWin(id) {
+  const s = WIN[id];
+  s.minimized = false;
+  const el = document.getElementById(id);
+  el.style.left = s.left + 'px';
+  el.style.top  = s.top  + 'px';
+  showBody(id);
+  focus(id);
+}
+
+function hideBody(id) {
+  document.getElementById(id).querySelectorAll('.window-body,.window-menu').forEach(e => e.style.display = 'none');
+}
+function showBody(id) {
+  document.getElementById(id).querySelectorAll('.window-body,.window-menu').forEach(e => e.style.display = '');
+}
+
+// ── Taskbar buttons ──
+function addTbBtn(id) {
+  if (document.getElementById('tb_' + id)) return;
+  const el = document.getElementById(id);
+  const title = el.querySelector('.title-left').textContent.trim().slice(0,20);
+  const btn = document.createElement('button');
+  btn.className = 'tb-btn';
+  btn.id = 'tb_' + id;
+  btn.dataset.id = id;
+  btn.textContent = title;
+  btn.onclick = () => {
+    const s = WIN[id];
+    if (s.minimized) { restoreWin(id); }
+    else if (activeId === id) { minWin(id); }
+    else { focus(id); }
+  };
+  document.getElementById('tbButtons').appendChild(btn);
+}
+function removeTbBtn(id) {
+  const b = document.getElementById('tb_' + id);
+  if (b) b.remove();
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               CONTEXT MENU                          ║
+// ╚══════════════════════════════════════════════════════╝
+const ctxMenu = document.getElementById('ctxMenu');
+
+function showCtx(e, type, data) {
+  e.preventDefault(); e.stopPropagation();
+  hideCtx();
+
+  let items = [];
+
+  if (type === 'tb') {
+    const id = data.id;
+    const s = WIN[id];
+    items = [
+      { label: '📌 Restore',  fn: () => { if(s.minimized) restoreWin(id); else if(s.maximized) maxWin(id); }, off: !s.minimized && !s.maximized },
+      { label: '🔀 Move',     fn: () => bringToFront(id) },
+      { label: '_ Minimize',  fn: () => minWin(id) },
+      { label: '□ Maximize',  fn: () => maxWin(id), off: s.maximized },
+      { sep:true },
+      { label: '✕ Close\tAlt+F4', fn: () => closeWin(id) },
+    ];
+  } else if (type === 'file') {
+    const name = data.name;
+    items = [
+      { label: '▶ Open',          fn: () => fileOpen(name) },
+      { label: '📋 Copy',         fn: () => alert('Copied: ' + name) },
+      { label: '✂ Cut',           fn: () => alert('Cut: ' + name) },
+      { sep:true },
+      { label: '🗑️ Delete',       fn: () => alert(name + ' moved to Recycle Bin.') },
+      { label: '✏️ Rename',        fn: () => { const n = prompt('Rename:', name); if(n) alert('Renamed to: ' + n); } },
+      { sep:true },
+      { label: 'ℹ️ Properties',   fn: () => showFileProps(name) },
+    ];
+  } else if (type === 'drive') {
+    const name = data.name;
+    items = [
+      { label: '📂 Open',         fn: () => openWin('tableWin') },
+      { label: '🔍 Explore',      fn: () => openWin('tableWin') },
+      { sep:true },
+      { label: '🗒️ Format…',      fn: () => alert('Format ' + name + '?\n\nWARNING: This will erase all data!\n\n(Just kidding 😄)') },
+      { sep:true },
+      { label: 'ℹ️ Properties',   fn: () => showDriveProps(name) },
+    ];
+  } else if (type === 'di') {
+    const { id, label } = data;
+    items = [
+      { label: '📂 Open',      fn: () => openWin(id) },
+      { sep:true },
+      { label: '📋 Copy',      fn: () => alert('Copy icon: ' + label) },
+      { label: '✂ Cut',        fn: () => alert('Cut icon: ' + label) },
+      { sep:true },
+      { label: '✏️ Rename',    fn: () => alert('Rename: ' + label) },
+      { sep:true },
+      { label: 'ℹ️ Properties',fn: () => showDiProps(label) },
+    ];
+  } else {
+    // Desktop
+    items = [
+      { label: '🗂️ Arrange Icons',  fn: () => alert('Icons arranged by name.') },
+      { label: '🔄 Refresh',         fn: () => location.reload() },
+      { sep:true },
+      { label: '📋 Paste',           fn: () => alert('Nothing in clipboard.'), off:true },
+      { label: '📌 Paste Shortcut',  fn: () => alert('Nothing in clipboard.'), off:true },
+      { sep:true },
+      { label: '🆕 New ▶',          fn: () => alert('New Folder created: New Folder (1)') },
+      { sep:true },
+      { label: '🖥️ Properties',     fn: () => openWin('sysWin') },
+    ];
+  }
+
+  ctxMenu.innerHTML = items.map((item, i) => {
+    if (item.sep) return '<div class="ctx-sep"></div>';
+    return `<div class="ctx-item${item.off?' disabled':''}" data-i="${i}">${item.label}</div>`;
+  }).join('');
+
+  ctxMenu.querySelectorAll('.ctx-item:not(.disabled)').forEach(el => {
+    el.onclick = () => { items[+el.dataset.i].fn(); hideCtx(); };
+  });
+
+  ctxMenu.style.display = 'block';
+  let x = e.clientX, y = e.clientY;
+  const mw = ctxMenu.offsetWidth, mh = ctxMenu.offsetHeight;
+  if (x + mw > window.innerWidth)      x = window.innerWidth  - mw - 2;
+  if (y + mh > window.innerHeight - 38) y = window.innerHeight - 38 - mh - 2;
+  ctxMenu.style.left = x + 'px';
+  ctxMenu.style.top  = y + 'px';
+}
+
+function hideCtx() { ctxMenu.style.display = 'none'; }
+
+document.addEventListener('click', hideCtx);
+document.addEventListener('contextmenu', e => {
+  if (!e.target.closest('[oncontextmenu]') && !e.target.closest('.window')) {
+    showCtx(e, 'desktop', {});
+  }
+});
+
+// Properties helpers
+function showFileProps(name) {
+  document.getElementById('propsTitle').textContent = 'ℹ️ ' + name + ' Properties';
+  document.getElementById('propsBody').innerHTML = `
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+      <span style="font-size:32px;">📄</span>
+      <div><b>${name}</b><br/>Location: C:\\My Documents\\Cool Stuff</div>
+    </div>
+    <div class="separator"></div>
+    <table style="font-size:11px;width:100%;">
+      <tr><td style="color:#808080;padding:2px 4px;">Type:</td><td>File</td></tr>
+      <tr><td style="color:#808080;padding:2px 4px;">Location:</td><td>C:\\My Documents</td></tr>
+      <tr><td style="color:#808080;padding:2px 4px;">Modified:</td><td>11/02/1998</td></tr>
+      <tr><td style="color:#808080;padding:2px 4px;">Attributes:</td><td>Archive</td></tr>
+    </table>`;
+  openDlg('dlgProps');
+}
+function showDriveProps(name) {
+  document.getElementById('propsTitle').textContent = 'ℹ️ ' + name + ' Properties';
+  document.getElementById('propsBody').innerHTML = `
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+      <span style="font-size:32px;">🖴</span><div><b>${name}</b></div>
+    </div>
+    <div class="separator"></div>
+    <table style="font-size:11px;width:100%;">
+      <tr><td style="color:#808080;padding:2px 4px;">File system:</td><td>FAT32</td></tr>
+      <tr><td style="color:#808080;padding:2px 4px;">Used space:</td><td>804 MB</td></tr>
+      <tr><td style="color:#808080;padding:2px 4px;">Free space:</td><td>1.21 GB</td></tr>
+      <tr><td style="color:#808080;padding:2px 4px;">Capacity:</td><td>2.0 GB</td></tr>
+    </table>`;
+  openDlg('dlgProps');
+}
+function showDiProps(label) {
+  document.getElementById('propsTitle').textContent = 'ℹ️ ' + label + ' Properties';
+  document.getElementById('propsBody').innerHTML = `<div style="text-align:center;padding:8px;"><span style="font-size:36px;">🖥️</span><br/><b>${label}</b><br/><br/>System object</div>`;
+  openDlg('dlgProps');
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               MENUBAR DROPDOWNS                     ║
+// ╚══════════════════════════════════════════════════════╝
+let openMenuEl = null;
+
+function toggleMenuBar(spanEl, menuId) {
+  if (openMenuEl === menuId) { hideMenuBar(); return; }
+  hideMenuBar();
+  openMenuEl = menuId;
+  spanEl.classList.add('open');
+  const popup = document.getElementById(menuId);
+  if (!popup) return;
+  const r = spanEl.getBoundingClientRect();
+  popup.style.left = r.left + 'px';
+  popup.style.top  = r.bottom + 'px';
+  popup.style.display = 'block';
+}
+function hideMenuBar() {
+  if (openMenuEl) {
+    const p = document.getElementById(openMenuEl);
+    if (p) p.style.display = 'none';
+  }
+  document.querySelectorAll('.menu-item.open').forEach(e => e.classList.remove('open'));
+  openMenuEl = null;
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menu-item') && !e.target.closest('.menu-popup')) hideMenuBar();
+});
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               START MENU                            ║
+// ╚══════════════════════════════════════════════════════╝
+function toggleStart() {
+  const m = document.getElementById('startMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  hideSubs();
+}
+function closeStart() {
+  document.getElementById('startMenu').style.display = 'none';
+  hideSubs();
+}
+function hideSubs() {
+  document.querySelectorAll('.sm-sub').forEach(s => s.style.display = 'none');
+}
+function showSub(itemId, subId) {
+  hideSubs();
+  const item = document.getElementById(itemId);
+  const sub  = document.getElementById(subId);
+  const r = item.getBoundingClientRect();
+  sub.style.left = r.right + 'px';
+  sub.style.top  = r.top   + 'px';
+  sub.style.display = 'block';
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#startMenu') && !e.target.closest('#start-btn') && !e.target.closest('.sm-sub'))
+    closeStart();
+});
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               DIALOGS                               ║
+// ╚══════════════════════════════════════════════════════╝
+function openDlg(id) { document.getElementById(id).style.display = 'flex'; }
+function closeDlg(id) { document.getElementById(id).style.display = 'none'; }
+
+function runCmd() {
+  const v = document.getElementById('runInput').value.toLowerCase().trim();
+  closeDlg('dlgRun');
+  const map = { notepad:'aboutWin', explorer:'tableWin', control:'sysWin', minesweeper:'mineWin', recycle:'recycleWin' };
+  if (map[v]) openWin(map[v]);
+  else if (v === 'iexplore' || v === 'ie') ieAlert();
+  else if (v) alert('Cannot find program: ' + v + '\n\nMake sure the name is correct.');
+}
+
+function doShutdown() {
+  const v = document.querySelector('input[name="sd"]:checked').value;
+  closeDlg('dlgShutdown');
+  if (v === 'shutdown') {
+    document.body.innerHTML = '<div style="background:#000;color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial;font-size:18px;text-align:center;">It is now safe to turn off your computer.<br/><br/><span style="font-size:12px;color:#888;">Reload the page to restart Windows.</span></div>';
+  } else if (v === 'restart') {
+    document.body.innerHTML = '<div style="background:#000;color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial;font-size:18px;">Restarting Windows…</div>';
+    setTimeout(() => location.reload(), 2000);
+  } else {
+    alert('Stand by… 💤\n\nPress any key to wake the computer.');
+  }
+}
+
+function showFind() { openDlg('dlgFind'); }
+function doFind() {
+  const q = document.getElementById('findName').value || '*.*';
+  closeDlg('dlgFind');
+  alert('Find Results for "' + q + '" in C:\\\n\nNo files found matching the query.');
+}
+
+function ieAlert() {
+  alert('Internet Explorer 4.0\n\nConnecting to the internet…\n\nSCREEEEEEE-KA-CHING-CHING-bzzz-CHING!\n\nConnected at 56k bps! 🎉');
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               FILE ACTIONS                          ║
+// ╚══════════════════════════════════════════════════════╝
+function fileOpen(name) {
+  const msgs = {
+    'cool_screensaver.scr': '🌟 Running screensaver…\n\n*Flying Toasters appear*\n\nPress any key to exit.',
+    'homepage.htm':          '🌐 Opening in Internet Explorer 4.0…\n\n*loading for 45 seconds*',
+    'midi_music.mid':        '🎵 Playing midi_music.mid…\n\n♪♫ MIDI intensifies ♫♪',
+    'AOL_installer.exe':     '💿 Please insert AOL CD-ROM disc 1 of 7.\n\n"You\'ve got mail!"',
+    'dank_meme.bmp':         '🖼️ Opening in Microsoft Paint…\n\n*5 seconds later*\n\n⚠️ Paint has stopped responding.'
+  };
+  alert(msgs[name] || 'Opening ' + name + '…');
+}
+
+function signGuestbook() {
+  const name = document.getElementById('gbName').value.trim();
+  if (!name) { alert('Please enter your name!'); return; }
+  alert('📬 Thank you for signing the guestbook, ' + name + '!\n\nYou are visitor #' + (Math.floor(Math.random()*9000)+1000));
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               SYSTEM TABS                           ║
+// ╚══════════════════════════════════════════════════════╝
+function switchTab(key) {
+  ['G','D','P'].forEach(k => {
+    document.getElementById('tc' + k).style.display = 'none';
+    document.getElementById('tab' + k).classList.remove('active');
+  });
+  document.getElementById('tc' + key).style.display = '';
+  document.getElementById('tab' + key).classList.add('active');
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               MINESWEEPER                           ║
+// ╚══════════════════════════════════════════════════════╝
+let mBoard=[],mRev=[],mFlag=[],mTick=null,mSecs=0,mStarted=false,mOver=false;
+const MC=9,MR=9,MBOMBS=10;
+const NCLR=['','#00f','#070','#f00','#007','#700','#077','#000','#777'];
+
+function openMine() { openWin('mineWin'); initMine(); }
+function initMine() {
+  clearInterval(mTick); mSecs=0; mStarted=false; mOver=false;
+  document.getElementById('mineTimer').textContent='000';
+  document.getElementById('mineSmile').textContent='🙂';
+  document.getElementById('mineCount').textContent=String(MBOMBS).padStart(3,'0');
+  mBoard=Array.from({length:MR},()=>Array(MC).fill(0));
+  mRev  =Array.from({length:MR},()=>Array(MC).fill(false));
+  mFlag =Array.from({length:MR},()=>Array(MC).fill(false));
+  let p=0;
+  while(p<MBOMBS){ const r=Math.floor(Math.random()*MR),c=Math.floor(Math.random()*MC); if(mBoard[r][c]!=-1){mBoard[r][c]=-1;p++;} }
+  for(let r=0;r<MR;r++) for(let c=0;c<MC;c++){
+    if(mBoard[r][c]===-1) continue;
+    let n=0;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      const nr=r+dr,nc=c+dc;
+      if(nr>=0&&nr<MR&&nc>=0&&nc<MC&&mBoard[nr][nc]===-1) n++;
+    }
+    mBoard[r][c]=n;
+  }
+  renderMine();
+}
+
+function renderMine() {
+  const g=document.getElementById('mineGrid');
+  g.innerHTML='';
+  for(let r=0;r<MR;r++) for(let c=0;c<MC;c++){
+    const cell=document.createElement('div');
+    cell.className='mine-cell';
+    if(mRev[r][c]){
+      cell.classList.add('revealed');
+      const v=mBoard[r][c];
+      if(v===-1){ cell.textContent='💣'; if(mOver) cell.classList.add('boom'); }
+      else if(v>0){ cell.textContent=v; cell.style.color=NCLR[v]; }
+    } else {
+      cell.textContent=mFlag[r][c]?'🚩':'';
+      if(!mOver){
+        cell.onclick=()=>mClick(r,c);
+        cell.oncontextmenu=e=>{e.preventDefault();mFlag[r][c]=!mFlag[r][c];renderMine();};
+      }
+    }
+    g.appendChild(cell);
+  }
+}
+
+function mClick(r,c){
+  if(mOver||mFlag[r][c]||mRev[r][c]) return;
+  if(!mStarted){
+    mStarted=true;
+    mTick=setInterval(()=>{
+      mSecs++;
+      document.getElementById('mineTimer').textContent=String(Math.min(mSecs,999)).padStart(3,'0');
+    },1000);
+  }
+  if(mBoard[r][c]===-1){
+    mOver=true; clearInterval(mTick);
+    for(let rr=0;rr<MR;rr++) for(let cc=0;cc<MC;cc++) if(mBoard[rr][cc]===-1) mRev[rr][cc]=true;
+    document.getElementById('mineSmile').textContent='😵';
+    renderMine();
+    setTimeout(()=>alert('💣 BOOM! Game Over!\n\nClick the smiley to restart.'),100);
+    return;
+  }
+  mReveal(r,c);
+  renderMine();
+  mCheckWin();
+}
+function mReveal(r,c){
+  if(r<0||r>=MR||c<0||c>=MC||mRev[r][c]||mFlag[r][c]) return;
+  mRev[r][c]=true;
+  if(mBoard[r][c]===0) for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) mReveal(r+dr,c+dc);
+}
+function mCheckWin(){
+  let n=0; for(let r=0;r<MR;r++) for(let c=0;c<MC;c++) if(mRev[r][c]) n++;
+  if(n===MR*MC-MBOMBS){ clearInterval(mTick); mOver=true; document.getElementById('mineSmile').textContent='😎'; setTimeout(()=>alert('🎉 You Win!\n\nTime: '+mSecs+'s'),100); }
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               MARQUEE                               ║
+// ╚══════════════════════════════════════════════════════╝
+let mqX=600;
+const mqEl=document.getElementById('mqText');
+(function animMq(){
+  mqX-=1.5;
+  if(mqEl&&mqX<-mqEl.scrollWidth) mqX=window.innerWidth;
+  if(mqEl) mqEl.style.transform='translateX('+mqX+'px)';
+  requestAnimationFrame(animMq);
+})();
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               CLOCK                                 ║
+// ╚══════════════════════════════════════════════════════╝
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=
+    String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick,10000);
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               PROGRESS BAR                          ║
+// ╚══════════════════════════════════════════════════════╝
+let prog=72;
+setInterval(()=>{
+  prog=prog>=100?0:prog+1;
+  const b=document.getElementById('progressBar');
+  if(b){b.style.width=prog+'%';b.textContent=prog+'%';}
+},150);
+
+// ╔══════════════════════════════════════════════════════╗
+// ║          NOTEPAD HELPERS                            ║
+// ╚══════════════════════════════════════════════════════╝
+let wordWrapOn = true;
+function toggleWordWrap() {
+  wordWrapOn = !wordWrapOn;
+  const ta = document.getElementById('notepadText');
+  ta.style.whiteSpace = wordWrapOn ? 'pre-wrap' : 'pre';
+  ta.style.overflowX  = wordWrapOn ? 'hidden'   : 'auto';
+}
+function setNotepadFont(f) {
+  document.getElementById('notepadText').style.fontFamily = f + ',monospace';
+}
+function setNotepadSize(s) {
+  document.getElementById('notepadText').style.fontSize = s + 'px';
+}
+function findInNotepad() {
+  const q = prompt('Find what:');
+  if (!q) return;
+  const ta = document.getElementById('notepadText');
+  const idx = ta.value.indexOf(q);
+  if (idx === -1) alert('Cannot find "' + q + '".');
+  else { ta.focus(); ta.setSelectionRange(idx, idx + q.length); }
+}
+function goToLine() {
+  const n = parseInt(prompt('Line number:'));
+  if (!n || isNaN(n)) return;
+  const ta = document.getElementById('notepadText');
+  const lines = ta.value.split('\n');
+  if (n > lines.length) { alert('Line ' + n + ' does not exist.'); return; }
+  let pos = 0;
+  for (let i = 0; i < n - 1; i++) pos += lines[i].length + 1;
+  ta.focus(); ta.setSelectionRange(pos, pos);
+}
+function insertTimestamp() {
+  const ta = document.getElementById('notepadText');
+  const now = new Date();
+  const ts = now.toLocaleTimeString() + ' ' + now.toLocaleDateString();
+  const start = ta.selectionStart;
+  ta.value = ta.value.slice(0, start) + ts + ta.value.slice(ta.selectionEnd);
+  ta.focus(); ta.setSelectionRange(start + ts.length, start + ts.length);
+}
+function docExecCmd(cmd) { document.execCommand(cmd); }
+
+// ╔══════════════════════════════════════════════════════╗
+// ║          VIEW MODES (Explorer)                      ║
+// ╚══════════════════════════════════════════════════════╝
+function setView(mode) {
+  const grid = document.querySelector('#myComputerWin .icon-grid');
+  if (!grid) return;
+  if (mode === 'large')   { grid.style.flexDirection=''; grid.style.gap='12px'; grid.querySelectorAll('.icon-item span:first-child').forEach(s=>s.style.fontSize='32px'); }
+  if (mode === 'small')   { grid.style.flexDirection=''; grid.style.gap='4px';  grid.querySelectorAll('.icon-item span:first-child').forEach(s=>s.style.fontSize='16px'); }
+  if (mode === 'list')    { grid.style.flexDirection='column'; grid.style.gap='2px'; grid.querySelectorAll('.icon-item span:first-child').forEach(s=>s.style.fontSize='16px'); }
+  if (mode === 'details') { alert('Details view:\n\nName\t\tType\t\tSize\n──────────────────\n3½ Floppy\tDrive\t1.44 MB\nLocal Disk\tDrive\t2.0 GB\nCD-ROM\t\tDrive\t650 MB'); }
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║               INIT                                  ║
+// ╚══════════════════════════════════════════════════════╝
+window.addEventListener('load',()=>{
+  reg('welcomeWin',   40,  25, 490);
+  reg('myComputerWin',550, 25, 370);
+  reg('aboutWin',     40, 300, 370);
+  reg('guestbookWin', 430,290, 380);
+  reg('sysWin',       100,150, 530);
+  reg('tableWin',     120,120, 430);
+  reg('mineWin',      280,180, 220);
+  reg('recycleWin',   200,180, 300);
+  focus('welcomeWin');
+  initDesktopIconDrag();
+});
+
+// ╔══════════════════════════════════════════════════════╗
+// ║          DRAGGABLE DESKTOP ICONS                    ║
+// ╚══════════════════════════════════════════════════════╝
+
+</script>
+
+<!-- ═══════════════════════ MENU POPUPS ═══════════════════════ -->
+
+<!-- Welcome: Edit -->
+<div class="menu-popup" id="editMenuGeneric">
+  <div class="ctx-item" onclick="hideMenuBar();docExecCmd('undo')">Undo<span style="float:right;color:#808080;padding-left:20px">Ctrl+Z</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();docExecCmd('cut')">Cut<span style="float:right;color:#808080;padding-left:20px">Ctrl+X</span></div>
+  <div class="ctx-item" onclick="hideMenuBar();docExecCmd('copy')">Copy<span style="float:right;color:#808080;padding-left:20px">Ctrl+C</span></div>
+  <div class="ctx-item" onclick="hideMenuBar();docExecCmd('paste')">Paste<span style="float:right;color:#808080;padding-left:20px">Ctrl+V</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();docExecCmd('selectAll')">Select All<span style="float:right;color:#808080;padding-left:20px">Ctrl+A</span></div>
+</div>
+
+<!-- Welcome: View -->
+<div class="menu-popup" id="viewMenuGeneric">
+  <div class="ctx-item disabled">Toolbar ✓</div>
+  <div class="ctx-item disabled">Status Bar ✓</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();document.body.style.zoom='0.8'">Zoom 80%</div>
+  <div class="ctx-item" onclick="hideMenuBar();document.body.style.zoom='1'">Zoom 100%</div>
+  <div class="ctx-item" onclick="hideMenuBar();document.body.style.zoom='1.2'">Zoom 120%</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Source:\n\n&lt;!DOCTYPE html&gt;\n&lt;html&gt;...')">Source</div>
+</div>
+
+<!-- Generic Help menu (shared) -->
+<div class="menu-popup" id="helpMenuGeneric">
+  <div class="ctx-item" onclick="hideMenuBar();alert('Help Topics\n\nHelp is not available for this program.\n\nPlease consult the printed manual.')">Help Topics</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();openDlg('dlgAbout')">About Windows 98...</div>
+</div>
+
+<!-- My Computer: File -->
+<div class="menu-popup" id="fileMenuMyComp">
+  <div class="ctx-item" onclick="hideMenuBar();alert('New Folder created: New Folder (1)')">New Folder</div>
+  <div class="ctx-item" onclick="hideMenuBar();openWin('tableWin')">Open</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();closeWin('myComputerWin')">Close</div>
+</div>
+
+<!-- Explorer / My Computer: Edit -->
+<div class="menu-popup" id="editMenuExplorer">
+  <div class="ctx-item" onclick="hideMenuBar();alert('Select All\n\nAll objects selected.')">Select All<span style="float:right;color:#808080;padding-left:20px">Ctrl+A</span></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Invert Selection')">Invert Selection</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Copy\n\nObject copied to clipboard.')">Copy<span style="float:right;color:#808080;padding-left:20px">Ctrl+C</span></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Paste\n\nNothing in clipboard.')">Paste<span style="float:right;color:#808080;padding-left:20px">Ctrl+V</span></div>
+</div>
+
+<!-- Explorer / My Computer: View -->
+<div class="menu-popup" id="viewMenuExplorer">
+  <div class="ctx-item" onclick="hideMenuBar();setView('large')">Large Icons ✓</div>
+  <div class="ctx-item" onclick="hideMenuBar();setView('small')">Small Icons</div>
+  <div class="ctx-item" onclick="hideMenuBar();setView('list')">List</div>
+  <div class="ctx-item" onclick="hideMenuBar();setView('details')">Details</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Arrange Icons\n\nIcons sorted by name.')">Arrange Icons</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Refresh\n\nFolder refreshed.')">Refresh<span style="float:right;color:#808080;padding-left:20px">F5</span></div>
+</div>
+
+<!-- Explorer / My Computer: Favorites -->
+<div class="menu-popup" id="favMenuExplorer">
+  <div class="ctx-item" onclick="hideMenuBar();alert('Add to Favorites\n\n\"My Computer\" added to Favorites!')">Add to Favorites...</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Organize Favorites\n\nNo favorites yet.')">Organize Favorites...</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();ieAlert()">🌐 Microsoft</div>
+  <div class="ctx-item" onclick="hideMenuBar();ieAlert()">🌐 GeoCities</div>
+  <div class="ctx-item" onclick="hideMenuBar();ieAlert()">🌐 AltaVista</div>
+  <div class="ctx-item" onclick="hideMenuBar();ieAlert()">🌐 Netscape</div>
+</div>
+
+<!-- File Explorer: File -->
+<div class="menu-popup" id="fileMenuExplorer">
+  <div class="ctx-item" onclick="hideMenuBar();alert('New Folder created: New Folder (1)')">New Folder</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('No items selected.')">Open</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('No items selected.')">Delete</div>
+  <div class="ctx-item" onclick="hideMenuBar();alert('Rename:\n\nEnter new name')">Rename</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();closeWin('tableWin')">Close</div>
+</div>
+
+<!-- Notepad: Edit -->
+<div class="menu-popup" id="editMenuNotepad">
+  <div class="ctx-item" onclick="hideMenuBar();document.getElementById('notepadText').focus();document.execCommand('undo')">Undo<span style="float:right;color:#808080;padding-left:20px">Ctrl+Z</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();document.getElementById('notepadText').focus();document.execCommand('cut')">Cut<span style="float:right;color:#808080;padding-left:20px">Ctrl+X</span></div>
+  <div class="ctx-item" onclick="hideMenuBar();document.getElementById('notepadText').focus();document.execCommand('copy')">Copy<span style="float:right;color:#808080;padding-left:20px">Ctrl+C</span></div>
+  <div class="ctx-item" onclick="hideMenuBar();document.getElementById('notepadText').focus();document.execCommand('paste')">Paste<span style="float:right;color:#808080;padding-left:20px">Ctrl+V</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();document.getElementById('notepadText').select()">Select All<span style="float:right;color:#808080;padding-left:20px">Ctrl+A</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();findInNotepad()">Find...<span style="float:right;color:#808080;padding-left:20px">Ctrl+F</span></div>
+  <div class="ctx-item" onclick="hideMenuBar();goToLine()">Go To Line...<span style="float:right;color:#808080;padding-left:20px">Ctrl+G</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();insertTimestamp()">Time/Date<span style="float:right;color:#808080;padding-left:20px">F5</span></div>
+</div>
+
+<!-- Notepad: View -->
+<div class="menu-popup" id="viewMenuNotepad">
+  <div class="ctx-item" onclick="hideMenuBar();toggleWordWrap()">Word Wrap ✓</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();setNotepadFont('Courier New')">Font: Courier New ✓</div>
+  <div class="ctx-item" onclick="hideMenuBar();setNotepadFont('Arial')">Font: Arial</div>
+  <div class="ctx-item" onclick="hideMenuBar();setNotepadFont('Times New Roman')">Font: Times New Roman</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="hideMenuBar();setNotepadSize(10)">Size: 10</div>
+  <div class="ctx-item" onclick="hideMenuBar();setNotepadSize(12)">Size: 12 ✓</div>
+  <div class="ctx-item" onclick="hideMenuBar();setNotepadSize(14)">Size: 14</div>
+</div>
+
+<!-- ═══ About Windows 98 dialog ═══ -->
+<div class="dlg-overlay" id="dlgAbout">
+  <div class="window dlg" style="width:380px;">
+    <div class="window-titlebar">
+      <div class="title-left">🪟 About Windows 98</div>
+      <div class="window-controls"><div class="wctrl" onclick="closeDlg('dlgAbout')">✕</div></div>
+    </div>
+    <div class="window-body">
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;">
+        <div style="font-size:48px;flex-shrink:0;">🪟</div>
+        <div>
+          <div style="font-size:14px;font-weight:bold;color:#000080;margin-bottom:4px;">Microsoft Windows 98</div>
+          <div style="margin-bottom:2px;">Second Edition</div>
+          <div style="margin-bottom:2px;">Version 4.10.2222 A</div>
+          <div class="separator"></div>
+          <div style="margin-bottom:2px;">This product is licensed to:</div>
+          <div style="font-weight:bold;margin-bottom:2px;">Webmaster99</div>
+          <div style="color:#808080;font-size:10px;margin-bottom:4px;">ACME Corp, Inc.</div>
+          <div class="separator"></div>
+          <div style="font-size:10px;color:#808080;margin-bottom:2px;">Copyright © 1981–1998 Microsoft Corporation</div>
+          <div style="font-size:10px;color:#808080;">All rights reserved.</div>
+        </div>
+      </div>
+      <div class="raised" style="padding:4px;margin-bottom:8px;">
+        <div style="margin-bottom:3px;font-size:10px;font-weight:bold;">Physical Memory Available to Windows:</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:62%;">39,936 KB Free</div>
+        </div>
+        <div style="font-size:10px;color:#808080;margin-top:2px;">64,512 KB Total</div>
+      </div>
+      <div style="text-align:center;">
+        <button class="btn default-btn" onclick="closeDlg('dlgAbout')">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
